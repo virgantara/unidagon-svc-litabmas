@@ -22,20 +22,13 @@ async function asyncForEach(array, callback) {
 
 function rekapPengabdian(dataQuery, callback){
     let params = []
-    var txt = "SELECT pr.nama_prodi, count(*) as jumlah FROM litab_pengabdian p "
+    var txt = "SELECT count(*) as jumlah FROM litab_pengabdian p "
     txt += " JOIN simak_masterdosen d ON d.id = p.dosen_id "
-    txt += " JOIN simak_masterprogramstudi pr ON pr.kode_prodi = d.kode_prodi "
-    
     txt += " WHERE 1 "
 
     if(dataQuery.status){
         txt += " and p.status = ? "
         params.push(dataQuery.status)   
-    }
-
-    if(dataQuery.kode_fakultas){
-        txt += " and pr.kode_fakultas = ? "
-        params.push(dataQuery.kode_fakultas)   
     }
 
     if(dataQuery.tahun){
@@ -43,22 +36,24 @@ function rekapPengabdian(dataQuery, callback){
         params.push(dataQuery.tahun)
     }
 
-    txt += " GROUP BY pr.nama_prodi ORDER BY jumlah DESC "
     sql.query(txt, params, function(err, res){
         if(err) {
             console.log(err)
             callback(err,null)
         }
 
-        callback(null, res)
+        if(res[0].jumlah)
+            callback(null, res[0].jumlah)
+        else
+            callback(null, 0)
     });
 }
 
 function rekapPenelitian(dataQuery, callback){
+
     let params = []
-    var txt = "SELECT pr.nama_prodi, count(*) as jumlah FROM litab_penelitian p "
+    var txt = "SELECT count(*) as jumlah FROM litab_penelitian p "
     txt += " JOIN simak_masterdosen d ON d.id = p.dosen_id "
-    txt += " JOIN simak_masterprogramstudi pr ON pr.kode_prodi = d.kode_prodi "
     txt += " WHERE 1 "
 
     if(dataQuery.status){
@@ -66,24 +61,25 @@ function rekapPenelitian(dataQuery, callback){
         params.push(dataQuery.status)   
     }
 
-    if(dataQuery.kode_fakultas){
-        txt += " and pr.kode_fakultas = ? "
-        params.push(dataQuery.kode_fakultas)   
+    if(dataQuery.kode_prodi){
+        txt += " and d.kode_prodi = ? "
+        params.push(dataQuery.kode_prodi)   
     }
 
     if(dataQuery.tahun){
         txt += " and tahun_penelitian = ? "
         params.push(dataQuery.tahun)
     }
-
-    txt += " GROUP BY pr.nama_prodi ORDER BY jumlah DESC "
     sql.query(txt, params, function(err, res){
         if(err) {
             console.log(err)
             callback(err,null)
         }
 
-        callback(null, res)
+        if(res[0].jumlah)
+            callback(null, res[0].jumlah)
+        else
+            callback(null, 0)
     });
 }
 
