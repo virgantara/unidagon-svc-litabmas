@@ -1,0 +1,7 @@
+{
+	"host" : "localhost",
+	"database" : "litabmas",
+	"user" : "admin",
+	"password" : "admin1988",
+	"port" : 3306
+}

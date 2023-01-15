@@ -1,0 +1,33 @@
+{
+  "name": "unidagon_svc_dosen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/virgantara/unidagon_svc_dosen.git"
+  },
+  "author": "Oddy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/virgantara/unidagon_svc_dosen/issues"
+  },
+  "homepage": "https://gitlab.com/virgantara/unidagon_svc_dosen#readme",
+  "dependencies": {
+    "array-unique": "^0.3.2",
+    "async": "^2.6.3",
+    "await": "^0.2.6",
+    "body-parser": "^1.19.0",
+    "config": "^2.0.2",
+    "express": "^4.17.1",
+    "moment": "^2.24.0",
+    "mysql": "^2.17.1",
+    "node-cron": "^2.0.3",
+    "promise": "^8.0.3"
+  },
+  "devDependencies": {}
+}
