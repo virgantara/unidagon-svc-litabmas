@@ -88,6 +88,11 @@ function countPenelitian(dataQuery, callback){
 
     var txt = "select tahun_penelitian as tahun, count(*) as jumlah from litab_penelitian WHERE status = 1"
 
+    if (dataQuery.list_tahun){
+        let years = dataQuery.list_tahun.toString()
+        console.log(years)
+        txt += " AND tahun_penelitian IN ("+years+") "
+    }
     txt += " group by tahun_penelitian order by tahun_penelitian "
 
     sql.query(txt, params, function(err, res){
