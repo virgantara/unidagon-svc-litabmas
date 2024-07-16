@@ -4,6 +4,15 @@ var Litabmas = require('../model/appModel.js');
 
 var response = require('../../res.js');
 
+exports.syncUser = function(req, res) {
+  Litabmas.syncUser(req.body,function(err, values) {    
+    if (err){
+      response.sqlErr(err, res);
+    }
+    else
+      response.ok(values, res);
+  });
+};
 
 exports.rekapPengabdian = function(req, res) {
   Litabmas.rekapPengabdian(req.query, function(err, values) {

@@ -19,6 +19,163 @@ async function asyncForEach(array, callback) {
   }
 }
 
+function syncUser(dataPost, callback){
+    let pMain = new Promise((resolve, reject)=>{
+        let params = [dataPost.kode_unik]
+        
+        let txt = "SELECT id, username, display_name, access_role, uuid FROM simak_users "
+        txt += " WHERE nim = ?  "
+
+        sql.query(txt,params,function(err, res){
+            if(err){
+                console.log(err)
+                reject(err)
+            }
+            else{
+                if(res[0])
+                    resolve(res[0])
+                else
+                    resolve(null)
+            }
+        })
+    })
+
+    pMain.then(hasil=>{
+        //update user
+        if(hasil){
+            if(dataPost.password_hash)
+            {
+                let params = [dataPost.kode_unik, dataPost.nama, dataPost.uuid, dataPost.password_hash, dataPost.kode_unik]
+                let txt = "UPDATE simak_users SET username = ?, display_name = ?, uuid = ?, password_hash = ? "
+                txt += " WHERE nim = ?  "
+                sql.query(txt,params,function(err, res){
+                    if(err){
+                        console.log(err)
+                        callback(err, null)
+                    }
+                    else{
+                        callback(null,'Data user Dosen SSO updated')
+                    }
+                })
+            }
+
+            else 
+            {
+                let params = [dataPost.kode_unik, dataPost.nama, dataPost.uuid, dataPost.kode_unik]
+                let txt = "UPDATE simak_users SET username = ?, display_name = ?, uuid = ? "
+                txt += " WHERE nim = ?  "
+                sql.query(txt,params,function(err, res){
+                    if(err){
+                        console.log(err)
+                        callback(err, null)
+                    }
+                    else{
+                        callback(null,'Data user Dosen SSO updated')
+                    }
+                })
+            }
+            
+        }
+
+        //user not exist
+        else{
+            let p1 = new Promise((resolve, reject)=>{
+                let params = [
+                    7,
+                    dataPost.email,
+                    dataPost.niy,
+                    dataPost.uuid,
+                    dataPost.nama,
+                    'Dosen',
+                    dataPost.kode_unik,
+                    dataPost.kampus,
+                    dataPost.kode_fakultas,
+                    dataPost.kode_prodi,
+                    dataPost.password_hash,
+                    '10'
+                ]
+                let txt = "INSERT INTO simak_users (role_id, "
+                txt += " email,username,uuid,display_name, access_role,nim,kampus, fakultas, "
+                txt += " prodi, password_hash, status) "
+                txt += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?) "
+                sql.query(txt,params,function(err, res){
+                    if(err){
+                        console.log(err)
+                        reject(err)
+                    }
+                    else{
+                        resolve(res)
+                    }
+                }) 
+            })
+
+            p1.then(hsl=>{
+                let ptmp = new Promise((resolve,reject)=>{
+                    let params = [dataPost.kode_unik]
+                    let txt = "SELECT id, username, display_name, access_role, uuid FROM simak_users "
+                    txt += " WHERE nim = ? ORDER BY id DESC LIMIT 1  "
+
+                    sql.query(txt,params,function(err, res){
+                        if(err){
+                            console.log(err)
+                            reject(err)
+                        }
+                        else{
+                            if(res[0])
+                                resolve(res[0])
+                            else
+                                resolve(null)
+                        }
+                    })
+                })
+
+                ptmp.then(tmp=>{
+                    
+                    if(tmp){
+                        let params = [
+                            'Dosen',
+                            tmp.id
+                        ]
+
+                        let txt = "INSERT INTO auth_assignment (item_name, user_id) "
+                        txt += " VALUES (?,?) "
+                        sql.query(txt,params,function(err, res){
+                            if(err){
+                                console.log(err)
+                                callback(err,null)
+                            }
+                            else{
+                                callback(null,'Data Auth Dosen inserted')
+                            }
+                        })     
+                    }
+
+                    else{
+                        callback(null,'user not found')
+                    }
+                    
+                })
+
+                ptmp.catch(err=>{
+                    console.log(err)
+                    callback(err,null)
+                })
+            }) 
+
+            p1.catch(err=>{
+                console.log(err)
+                callback(err,null)
+            })
+        }
+    })
+
+    pMain.catch(err=>{
+        console.log(err)
+        callback(err, null)
+    })
+
+    
+}
 
 function rekapPengabdian(dataQuery, callback){
     let params = []
@@ -120,6 +277,7 @@ function countPengabdian(dataQuery, callback){
     })
 }
 
+Litabmas.syncUser = syncUser
 Litabmas.countPenelitian = countPenelitian
 Litabmas.countPengabdian = countPengabdian
 Litabmas.rekapPenelitian = rekapPenelitian
