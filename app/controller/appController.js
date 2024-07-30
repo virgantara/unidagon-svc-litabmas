@@ -4,6 +4,16 @@ var Litabmas = require('../model/appModel.js');
 
 var response = require('../../res.js');
 
+exports.syncDosenLitabmas = function(req, res) {
+  Litabmas.syncDosenLitabmas(req.body,function(err, values) {    
+    if (err){
+      response.sqlErr(err, res);
+    }
+    else
+      response.ok(values, res);
+  });
+};
+
 exports.syncUser = function(req, res) {
   Litabmas.syncUser(req.body,function(err, values) {    
     if (err){

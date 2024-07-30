@@ -19,6 +19,100 @@ async function asyncForEach(array, callback) {
   }
 }
 
+function syncDosenLitabmas(dataPost, callback){
+    let pMain = new Promise((resolve, reject)=>{
+        let params = [dataPost.kode_unik]
+        
+        let txt = "SELECT niy, nidn_asli,nidn as kode_unik, nama_dosen FROM simak_masterdosen "
+        txt += " WHERE nidn = ? "
+
+        sql.query(txt,params,function(err, res){
+            if(err)
+                reject(err)
+            else{
+                if(res[0])
+                    resolve(res[0])
+                else
+                    resolve(null)
+            }
+        })
+    })
+
+    pMain.then(hasil=>{
+        //update user
+        if(hasil){
+
+            let params = [
+                dataPost.nama, 
+                dataPost.kode_fakultas, 
+                dataPost.kode_prodi, 
+                dataPost.jenjang,
+                dataPost.nidn,
+                dataPost.kode_feeder,
+                dataPost.id_reg_ptk,
+                dataPost.kode_unik
+            ]
+            let txt = "UPDATE simak_masterdosen SET nama_dosen = ?, kode_fakultas = ?, "
+            txt += " kode_prodi = ?, kode_jenjang_studi = ?, nidn_asli = ?, kode_feeder = ?, "
+            txt += " id_reg_ptk = ? WHERE nidn = ?  "
+            sql.query(txt,params,function(err, res){
+                if(err)
+                    callback(err, null)
+                else{
+                    callback(null,'Nama Dosen ELITABMAS telah diupdate')
+                }
+            })
+        }
+
+        //user not exist
+        else{
+            let p1 = new Promise((resolve, reject)=>{
+                let params = [
+                    dataPost.kode_pt,
+                    dataPost.kode_fakultas,
+                    dataPost.kode_prodi,
+                    dataPost.nik,
+                    dataPost.nidn,
+                    dataPost.kode_unik,
+                    dataPost.niy,
+                    dataPost.nama,
+                    dataPost.jenjang,
+                    dataPost.kode_feeder,
+                    dataPost.id_reg_ptk
+                ]
+
+                let txt = "INSERT INTO simak_masterdosen (kode_pt, "
+                txt += " kode_fakultas, kode_prodi, no_ktp_dosen, nidn_asli, "
+                txt += " nidn, niy, nama_dosen, "
+                txt += " kode_jenjang_studi, kode_feeder, id_reg_ptk) "
+                txt += " VALUES (?,?,?,?,?,?,?,?,?,?,?) "
+                sql.query(txt,params,function(err, res){
+                    if(err)
+                        reject(err)
+                    else{
+                        resolve(res)
+                    }
+                })  
+            })
+
+            p1.then(hsl=>{
+                callback(null, 'Data Dosen telah ditambahkan ke ELITABMAS')
+            }) 
+
+            p1.catch(err=>{
+                callback(err,null)
+            })
+        }
+    })
+
+    pMain.catch(err=>{
+        callback(err, null)
+    })
+
+    
+}
+
+
 function syncUser(dataPost, callback){
     let pMain = new Promise((resolve, reject)=>{
         let params = [dataPost.kode_unik]
@@ -277,6 +371,7 @@ function countPengabdian(dataQuery, callback){
     })
 }
 
+Litabmas.syncDosenLitabmas = syncDosenLitabmas
 Litabmas.syncUser = syncUser
 Litabmas.countPenelitian = countPenelitian
 Litabmas.countPengabdian = countPengabdian

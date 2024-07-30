@@ -2,6 +2,9 @@
 module.exports = function(app) {
   var todoList = require('../controller/appController');
 
+  app.route('/litab/dosen/sync')
+    .post(todoList.syncDosenLitabmas);
+
   app.route('/litab/user/sync')
     .post(todoList.syncUser);
 
