@@ -9,6 +9,12 @@ module.exports = function(app) {
     .post(todoList.syncUser);
 
   // todoList Routes
+  app.route('/litab/master/programpenelitian')
+    .get(todoList.listMasterProgramPenelitian);
+
+  app.route('/litab/master/skema')
+    .get(todoList.listMasterSkema);
+
   app.route('/litab/rekap/pengabdian')
     .get(todoList.rekapPengabdian);
     

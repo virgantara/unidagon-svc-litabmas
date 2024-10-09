@@ -4,6 +4,26 @@ var Litabmas = require('../model/appModel.js');
 
 var response = require('../../res.js');
 
+exports.listMasterProgramPenelitian = function(req, res) {
+  Litabmas.listMasterProgramPenelitian(req.query, function(err, values) {
+    if (err)
+      res.send(err);
+
+    response.ok(values, res);
+
+  });
+};
+
+exports.listMasterSkema = function(req, res) {
+  Litabmas.listMasterSkema(req.query, function(err, values) {
+    if (err)
+      res.send(err);
+
+    response.ok(values, res);
+
+  });
+};
+
 exports.syncDosenLitabmas = function(req, res) {
   Litabmas.syncDosenLitabmas(req.body,function(err, values) {    
     if (err){

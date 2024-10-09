@@ -19,6 +19,59 @@ async function asyncForEach(array, callback) {
   }
 }
 
+function listMasterProgramPenelitian(dataQuery, callback){
+    
+    let params = []
+    let txt = "SELECT * FROM litab_program_penelitian t "
+    txt += " WHERE 1 "
+
+    if(dataQuery.jenis_litab){
+        txt += " AND jenis_litab = ? "
+        params.push(dataQuery.jenis_litab)
+    }
+
+    sql.query(txt, params,function(err, res){
+        if(err){
+            console.log(err)
+            callback(err, null)
+        }
+        else
+            callback(null, res)
+    })
+}
+
+function listMasterSkema(dataQuery, callback){
+    
+    let params = []
+    let txt = "SELECT p.nama as nama_program, p.kode as kode_program, t.* FROM litab_skema t "
+    txt += " JOIN litab_program_penelitian p ON p.id = t.program_id "
+    txt += " WHERE 1 "
+
+    if(dataQuery.jenis_litab){
+        txt += " AND t.jenis_litab = ? "
+        params.push(dataQuery.jenis_litab)
+    }
+
+    if(dataQuery.is_removed){
+        txt += " AND t.is_removed = ? "
+        params.push(dataQuery.is_removed)
+    }
+
+    if(dataQuery.program_id){
+        txt += " AND t.program_id = ? "
+        params.push(dataQuery.program_id)
+    }
+
+    sql.query(txt, params,function(err, res){
+        if(err){
+            console.log(err)
+            callback(err, null)
+        }
+        else
+            callback(null, res)
+    })
+}
+
 function syncDosenLitabmas(dataPost, callback){
     let pMain = new Promise((resolve, reject)=>{
         let params = [dataPost.kode_unik]
@@ -371,6 +424,8 @@ function countPengabdian(dataQuery, callback){
     })
 }
 
+Litabmas.listMasterSkema = listMasterSkema
+Litabmas.listMasterProgramPenelitian = listMasterProgramPenelitian
 Litabmas.syncDosenLitabmas = syncDosenLitabmas
 Litabmas.syncUser = syncUser
 Litabmas.countPenelitian = countPenelitian
